@@ -1,0 +1,20 @@
+
+   
+{
+    "name": "veryyoung-nft-demo",
+    "version": "1.0.0",
+    "description": "veryyoung nft demo",
+    "type": "module",
+    "scripts": {
+    },
+    "repository": {
+      "type": "git",
+      "url": "git@github.com/veryyoung/nft-demo.git"
+    },
+    "author": "veryyoung",
+    "license": "MIT",
+    "devDependencies": {
+    },
+    "dependencies": {
+    }
+  }
