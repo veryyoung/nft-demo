@@ -1,20 +1,29 @@
-
-   
 {
     "name": "veryyoung-nft-demo",
     "version": "1.0.0",
     "description": "veryyoung nft demo",
-    "type": "module",
     "scripts": {
+        "test": "npx hardhat test --network localhost",
+        "complie": "npx hardhat compile",
+        "deploy:simple": "npx hardhat run scripts/deploy_simple.js",
+        "deploy": "npx hardhat run scripts/deploy.js"
     },
     "repository": {
-      "type": "git",
-      "url": "git@github.com/veryyoung/nft-demo.git"
+        "type": "git",
+        "url": "git@github.com/veryyoung/nft-demo.git"
     },
     "author": "veryyoung",
     "license": "MIT",
     "devDependencies": {
+        "@nomiclabs/hardhat-ethers": "^2.0.2",
+        "@nomiclabs/hardhat-etherscan": "^2.1.6",
+        "@nomiclabs/hardhat-waffle": "^2.0.1",
+        "chai": "^4.3.4",
+        "ethereum-waffle": "^3.4.0",
+        "ethers": "^5.4.7",
+        "hardhat": "^2.6.4"
     },
     "dependencies": {
+        "@openzeppelin/contracts": "^4.4.1"
     }
-  }
+}

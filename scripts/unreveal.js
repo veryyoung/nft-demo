@@ -5,7 +5,7 @@ const maxSupply = 100;
 const desc = "veryyoung nft demo";
 
 const generateNotRevealedMetadata = async () => {
-  const filePath = path.join(path.resolve(), "./resources/metadata/not-revealed");
+  const filePath = path.join(path.resolve(), "./resource/metadata/not_revealed");
   const indexes = [...Array(maxSupply).keys()];
 
   for (const id of indexes) {

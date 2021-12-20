@@ -6,12 +6,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract VeryyoungNFTDemo is
     ERC721Enumerable,
-    ERC721URIStorage,
     ReentrancyGuard,
     Ownable
 {
@@ -28,7 +26,7 @@ contract VeryyoungNFTDemo is
     }
     
     State private _state;
-    string private _tokenUriBase;
+    string private baseURI;
     bytes32 private whitelistRoot;
 
 
@@ -50,7 +48,7 @@ contract VeryyoungNFTDemo is
         string memory _initBaseURI,
         bytes32 _whitelistRoot) ERC721(_name, _symbol) {
         _state = State.Setup;
-        setBaseURI(_initBaseURI);
+        baseURI = _initBaseURI;
         whitelistRoot = _whitelistRoot;
     }
 
@@ -60,16 +58,6 @@ contract VeryyoungNFTDemo is
 
     function updatePublicPrice(uint256 __price) public onlyOwner {
         PUBLIC_PRICE = __price;
-    }
-
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
-        return
-            string(abi.encodePacked(_baseURI(), Strings.toString(tokenId)));
     }
 
     function _baseURI() internal view override returns (string memory) {
@@ -105,12 +93,7 @@ contract VeryyoungNFTDemo is
         view
         returns (bool)
     {
-        return
-            MerkleProof.verify(
-                proof,
-                whitelistRoot,
-                keccak256(abi.encodePacked(user))
-            );
+        return MerkleProof.verify(proof, whitelistRoot, keccak256(abi.encodePacked(user)));
     }
 
     function presaleMint(uint256 amount, bytes32[] memory proof)
@@ -125,7 +108,7 @@ contract VeryyoungNFTDemo is
         );
 
         require(
-            amount <= MAX_MINT,
+            amount <= PRESALE_MAX_MINT,
             "Amount should not exceed max mint number per transaction."
         );
         require(
@@ -143,11 +126,11 @@ contract VeryyoungNFTDemo is
         uint256 ownerMintedCount = addressMintedBalance[msg.sender];
 
         require(
-            ownerMintedCount + amount <= maxWhitelistNfts,
+            ownerMintedCount + amount <= PRESALE_MAX_MINT,
             "Max NFT per address exceeded"
         );
 
-        for (uint256 i = 1; i <= _mintAmount; i++) {
+        for (uint256 i = 1; i <= amount; i++) {
             uint256 newItemId = _tokenIds.current();
             _safeMint(msg.sender, newItemId);
             _tokenIds.increment();
@@ -156,9 +139,7 @@ contract VeryyoungNFTDemo is
         emit Minted(msg.sender, amount);
     }
 
-    function mint(
-        uint256 amount
-    ) external payable nonReentrant {
+    function mint(uint256 amount) external payable nonReentrant {
         require(_state == State.Public, "Sale is not active.");
         require(
             !Address.isContract(msg.sender),
@@ -184,10 +165,10 @@ contract VeryyoungNFTDemo is
         emit Minted(msg.sender, amount);
     }
 
-    function withdraw(address payable _to) public onlyOwner {
+    function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;
-        (bool sent, bytes memory data) = _to.call{value: balance}("");
-        require(sent, "Failed to send Ether");
+        (bool success, ) = msg.sender.call{value: balance}("");
+        require(success, "Failed to send Ether");
     }
 
 

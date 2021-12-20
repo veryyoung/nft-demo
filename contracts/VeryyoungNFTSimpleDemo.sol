@@ -4,18 +4,9 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-contract VeryyoungNFTDemo is
-    ERC721Enumerable,
-    ERC721URIStorage,
-    ReentrancyGuard,
-    Ownable
-{
-    using ECDSA for bytes32;
-    using Address for address;
+contract VeryyoungNFTSimpleDemo is ERC721Enumerable, ReentrancyGuard, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     
@@ -30,22 +21,13 @@ contract VeryyoungNFTDemo is
         string memory _name,
         string memory _symbol,
         string memory _initBaseURI) ERC721(_name, _symbol) {
-        setBaseURI(_initBaseURI);
+        baseURI = _initBaseURI;
     }
 
     function updatePrice(uint256 __price) public onlyOwner {
         PRICE = __price;
     }
     
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory)
-    {
-        return
-            string(abi.encodePacked(_baseURI(), Strings.toString(tokenId)));
-    }
 
     function _baseURI() internal view override returns (string memory) {
         return baseURI;
@@ -80,9 +62,10 @@ contract VeryyoungNFTDemo is
         emit Minted(msg.sender, amount);
     }
 
-    function withdraw(address payable _to) public onlyOwner {
+    function withdraw() public onlyOwner {
         uint256 balance = address(this).balance;
-        (bool sent, bytes memory data) = _to.call{value: balance}("");
-        require(sent, "Failed to send Ether");
+        (bool success, ) = msg.sender.call{value: balance}("");
+        require(success, "Failed to send Ether");
     }
+
 }
