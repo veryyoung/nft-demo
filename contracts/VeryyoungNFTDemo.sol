@@ -115,8 +115,11 @@ contract VeryyoungNFTDemo is
             _tokenIds.current() + 1 <= PRESALE_SUPPLY,
             "Max supply of tokens exceeded."
         );
-        require(msg.value >= PRESALE_PRICE, "Ether value sent is incorrect.");
-
+        require(
+            msg.value >= PRESALE_PRICE * amount,
+            "Ether value sent is incorrect."
+        );
+        
         bool isUserWhitelisted = isWhitelisted(msg.sender, proof);
         require(
             isUserWhitelisted,
