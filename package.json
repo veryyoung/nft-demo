@@ -5,7 +5,7 @@
     "scripts": {
         "test": "npx hardhat test --network localhost",
         "complie": "npx hardhat compile",
-        "deploy:simple": "npx hardhat run scripts/deploy_simple.js",
+        "deploy:simple": "npx hardhat run scripts/deploy_simple.js --network rinkeby",
         "deploy": "npx hardhat run scripts/deploy.js"
     },
     "repository": {
@@ -24,6 +24,7 @@
         "hardhat": "^2.6.4"
     },
     "dependencies": {
-        "@openzeppelin/contracts": "^4.4.1"
+        "@openzeppelin/contracts": "^4.4.1",
+        "dotenv": "^10.0.0"
     }
 }
