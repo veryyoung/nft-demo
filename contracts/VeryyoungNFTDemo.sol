@@ -1,22 +1,19 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "erc721a/contracts/ERC721A.sol";
 
 contract VeryyoungNFTDemo is
-    ERC721Enumerable,
+    ERC721A,
     ReentrancyGuard,
     Ownable
 {
     using ECDSA for bytes32;
     using Address for address;
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
 
     enum State {
         Setup,
@@ -46,7 +43,7 @@ contract VeryyoungNFTDemo is
         string memory _name,
         string memory _symbol,
         string memory _initBaseURI,
-        bytes32 _whitelistRoot) ERC721(_name, _symbol) {
+        bytes32 _whitelistRoot) ERC721A(_name, _symbol) {
         _state = State.Setup;
         baseURI = _initBaseURI;
         whitelistRoot = _whitelistRoot;
@@ -112,7 +109,7 @@ contract VeryyoungNFTDemo is
             "Amount should not exceed max mint number per transaction."
         );
         require(
-            _tokenIds.current() + 1 <= PRESALE_SUPPLY,
+            totalSupply() + 1 <= PRESALE_SUPPLY,
             "Max supply of tokens exceeded."
         );
         require(
@@ -133,12 +130,8 @@ contract VeryyoungNFTDemo is
             "Max NFT per address exceeded"
         );
 
-        for (uint256 i = 1; i <= amount; i++) {
-            uint256 newItemId = _tokenIds.current();
-            _safeMint(msg.sender, newItemId);
-            _tokenIds.increment();
-            addressMintedBalance[msg.sender]++;
-        }
+        _safeMint(msg.sender, amount);
+        addressMintedBalance[msg.sender]  = ownerMintedCount + amount;
         emit Minted(msg.sender, amount);
     }
 
@@ -153,18 +146,14 @@ contract VeryyoungNFTDemo is
             "Amount should not exceed max mint number per transaction."
         );
         require(
-            _tokenIds.current() + amount <= MAX_SUPPLY,
+            totalSupply() + amount <= MAX_SUPPLY,
             "Amount should not exceed max supply."
         );
         require(
             msg.value >= PUBLIC_PRICE * amount,
             "Ether value sent is incorrect."
         );
-        for (uint256 i = 0; i < amount; i++) {
-            uint256 newItemId = _tokenIds.current();
-            _safeMint(msg.sender, newItemId);
-            _tokenIds.increment();
-        }
+        _safeMint(msg.sender, 1);
         emit Minted(msg.sender, amount);
     }
 

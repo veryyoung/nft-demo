@@ -4,11 +4,9 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "erc721a/contracts/ERC721A.sol";
 
-contract VeryyoungNFTSimpleDemo is ERC721Enumerable, ReentrancyGuard, Ownable {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+contract VeryyoungNFTSimpleDemo is ERC721A, ReentrancyGuard, Ownable {
     
     string public baseURI;
     uint256 public constant MAX_SUPPLY = 100;
@@ -20,7 +18,7 @@ contract VeryyoungNFTSimpleDemo is ERC721Enumerable, ReentrancyGuard, Ownable {
     constructor(
         string memory _name,
         string memory _symbol,
-        string memory _initBaseURI) ERC721(_name, _symbol) {
+        string memory _initBaseURI) ERC721A(_name, _symbol) {
         baseURI = _initBaseURI;
     }
 
@@ -47,18 +45,14 @@ contract VeryyoungNFTSimpleDemo is ERC721Enumerable, ReentrancyGuard, Ownable {
             "Amount should not exceed max mint number per transaction."
         );
         require(
-            _tokenIds.current() + amount <= MAX_SUPPLY,
+            totalSupply() + amount <= MAX_SUPPLY,
             "Amount should not exceed max supply"
         );
         require(
             msg.value >= PRICE * amount,
             "Ether value sent is incorrect."
         );
-        for (uint256 i = 0; i < amount; i++) {
-            uint256 newItemId = _tokenIds.current();
-            _safeMint(msg.sender, newItemId);
-            _tokenIds.increment();
-        }
+        _safeMint(msg.sender, amount);
         emit Minted(msg.sender, amount);
     }
 
