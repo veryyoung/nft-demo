@@ -3,7 +3,7 @@ const { ethers } = require("hardhat");
 
 describe("NFTSimpleDemo", function () {
 
-  const initBaseURI = "ipfs://initBaseURI";
+  const initBaseURI = "ipfs://initBaseURI/";
 
   let accounts;
   let deployer;
@@ -17,16 +17,6 @@ describe("NFTSimpleDemo", function () {
     accounts = await ethers.getSigners();
     deployer = accounts[0];
     minter = accounts[1];
-  });
-
-  it("Should return the new baseURI once it's changed", async function () {
-    expect(await contract.baseURI()).to.equal(initBaseURI);
-
-    const newBaseURI = "ipfs://newBaseURI";
-    const setBaseURITx = await contract.setBaseURI(newBaseURI);
-    await setBaseURITx.wait();
-
-    expect(await contract.baseURI()).to.equal(newBaseURI);
   });
 
   it("Should mint one success when amount and value is set ok", async function () {
